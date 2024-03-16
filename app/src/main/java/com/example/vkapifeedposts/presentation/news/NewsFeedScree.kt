@@ -25,14 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vkapifeedposts.ui.theme.DarkBlue
 import com.example.vkapifeedposts.domain.entity.FeedPost
+import com.example.vkapifeedposts.presentation.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsFeedScreem(
                paddingValues: PaddingValues,
-               onCommentClickListener : (FeedPost) -> Unit
+               viewModelFactory: ViewModelFactory,
+               onCommentClickListener : (FeedPost) -> Unit,
+
                ) {
-    val viewModel : NewsFeedViewModel = viewModel()
+    val viewModel : NewsFeedViewModel = viewModel(factory =  viewModelFactory)
 
     val screenState = viewModel.screenState.collectAsState(NewsFeedScreenState.Initial)
     when(val currentState = screenState.value) {

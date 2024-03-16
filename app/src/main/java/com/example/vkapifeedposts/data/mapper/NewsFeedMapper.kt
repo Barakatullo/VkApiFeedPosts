@@ -8,9 +8,10 @@ import com.example.vkapifeedposts.domain.entity.StatisticItem
 import com.example.vkapifeedposts.domain.entity.StatisticType
 import java.text.SimpleDateFormat
 import java.util.Date
+import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class NewsFeedMapper {
+class NewsFeedMapper@Inject constructor() {
     fun mapResponseToPosts(responseDto: NewsFeedResponseDto): List<FeedPost> {
         val result = mutableListOf<FeedPost>()
 
