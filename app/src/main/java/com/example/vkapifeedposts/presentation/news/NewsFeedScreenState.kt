@@ -1,6 +1,6 @@
 package com.example.vkapifeedposts.presentation.news
 
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.domain.entity.FeedPost
 
 sealed class NewsFeedScreenState {
     object Initial : NewsFeedScreenState()

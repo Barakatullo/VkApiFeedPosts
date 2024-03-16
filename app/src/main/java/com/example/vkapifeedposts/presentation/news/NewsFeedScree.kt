@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vkapifeedposts.ui.theme.DarkBlue
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.domain.entity.FeedPost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
