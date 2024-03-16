@@ -1,4 +1,4 @@
-package com.example.vkapifeedposts.domain
+package com.example.vkapifeedposts.domain.entity
 
 sealed class LoginState {
     object Auth : LoginState()

@@ -1,4 +1,4 @@
-package com.example.vkapifeedposts.domain
+package com.example.vkapifeedposts.domain.entity
 
 import android.os.Bundle
 import android.os.Parcelable

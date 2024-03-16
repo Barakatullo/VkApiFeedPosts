@@ -1,11 +1,11 @@
 package com.example.vkapifeedposts.data.mapper
 
 import com.example.vkapifeedposts.data.module.comments.CommentsResponseDto
-import com.example.vkapifeedposts.domain.PostComment
+import com.example.vkapifeedposts.domain.entity.PostComment
 import com.example.vkapifeedposts.data.module.NewsFeedResponseDto
-import com.example.vkapifeedposts.domain.FeedPost
-import com.example.vkapifeedposts.domain.StatisticItem
-import com.example.vkapifeedposts.domain.StatisticType
+import com.example.vkapifeedposts.domain.entity.FeedPost
+import com.example.vkapifeedposts.domain.entity.StatisticItem
+import com.example.vkapifeedposts.domain.entity.StatisticType
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.math.absoluteValue

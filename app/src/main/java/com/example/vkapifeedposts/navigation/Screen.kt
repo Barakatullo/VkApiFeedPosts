@@ -2,7 +2,7 @@ package com.example.vkapifeedposts.navigation
 
 import android.net.Uri
 import com.google.gson.Gson
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.domain.entity.FeedPost
 
 sealed class Screen(
     val route:String

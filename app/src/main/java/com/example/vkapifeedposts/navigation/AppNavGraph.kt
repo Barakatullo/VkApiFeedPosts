@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.vkapifeedposts.navigation.homeScreenNavGraph
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.domain.entity.FeedPost
 import com.example.vkapifeedposts.navigation.Screen
 
 

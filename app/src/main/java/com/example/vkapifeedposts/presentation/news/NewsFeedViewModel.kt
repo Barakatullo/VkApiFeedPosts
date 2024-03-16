@@ -4,8 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vkapifeedposts.data.repository.NewsFeedRepository
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.data.repository.NewsFeedRepositoryImpl
+import com.example.vkapifeedposts.domain.entity.FeedPost
+import com.example.vkapifeedposts.domain.usecases.ChangeLikeStatusUseCase
+import com.example.vkapifeedposts.domain.usecases.DeleteItemUseCase
+import com.example.vkapifeedposts.domain.usecases.GetRecommendationsUseCase
+import com.example.vkapifeedposts.domain.usecases.LoadNextDataUseCase
 import com.example.vkapifeedposts.extensions.mergeWith
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,8 +26,15 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
         Log.d("NewsFeedExceptionHandler", "Exception caught by exception handler")
     }
 
-    private val repository = NewsFeedRepository(application)
-    private val recomandationFlow = repository.recommendations
+
+    private val repository = NewsFeedRepositoryImpl(application)
+
+    private val getRecommendationsUseCase = GetRecommendationsUseCase(repository)
+    private val loadNextDataUseCase = LoadNextDataUseCase(repository)
+    private val changeLikeStatusUseCase = ChangeLikeStatusUseCase(repository)
+    private val deleteItemUseCase = DeleteItemUseCase(repository)
+
+    private val recomandationFlow = getRecommendationsUseCase.invoke()
 
 
     private val loadNextDataEvents = MutableSharedFlow<Unit>()
@@ -51,22 +62,20 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
 
     fun chancgeLikeStatus(feedPost: FeedPost) {
         viewModelScope.launch {
-            repository.changeLikeStatus(feedPost)
+            changeLikeStatusUseCase.invoke(feedPost)
         }
     }
 
     fun loadNextRecommendations() {
         viewModelScope.launch(exceptionHandler) {
             loadNextDataEvents.emit(Unit)
-            repository.loadNextRecomandations()
+            loadNextDataUseCase.invoke()
         }
-
-
     }
 
     fun remove(feedPost: FeedPost) {
         viewModelScope.launch(exceptionHandler) {
-            repository.deleteItem(feedPost)
+            deleteItemUseCase.invoke(feedPost)
         }
     }
 }

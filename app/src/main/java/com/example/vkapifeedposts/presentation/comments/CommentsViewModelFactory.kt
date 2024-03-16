@@ -3,7 +3,7 @@ package com.example.vkapifeedposts.presentation.comments
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.vkapifeedposts.domain.FeedPost
+import com.example.vkapifeedposts.domain.entity.FeedPost
 
 class CommentsViewModelFactory(
     val feedPost: FeedPost,
