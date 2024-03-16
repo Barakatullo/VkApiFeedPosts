@@ -37,20 +37,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.vkapifeedposts.domain.entity.PostComment
 import com.example.vkapifeedposts.domain.entity.FeedPost
+import com.example.vkapifeedposts.presentation.ViewModelFactory
+import com.example.vkapifeedposts.presentation.news.NewsFeedApplication
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CommentScreen(
     feedPost: FeedPost,
-    onBackPressed: () -> Unit) {
+    onBackPressed: () -> Unit
+) {
+    val component =(LocalContext.current.applicationContext as NewsFeedApplication)
+        .component
+        .getCommentsScreenComponentFactory()
+        .create(feedPost)
+
     val context = LocalContext.current
     val application = context.applicationContext as Application
     val viewmodel: CommentsViewModel = viewModel(
-        factory = CommentsViewModelFactory(
-            feedPost,
-            application
-        )
+        factory = component.getVMFactory()
     )
 
     val screenState = viewmodel.screenState.collectAsState(CommentsScreenState.Initial)

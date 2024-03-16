@@ -6,8 +6,9 @@ import com.example.vkapifeedposts.domain.entity.PostComment
 import com.example.vkapifeedposts.domain.repository.NewsFeedRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class GetAuthStateUseCase(private val repository: NewsFeedRepository) {
+class GetAuthStateUseCase@Inject constructor(private val repository: NewsFeedRepository) {
     operator fun invoke(): StateFlow<LoginState> {
         return repository.getAuthState()
     }

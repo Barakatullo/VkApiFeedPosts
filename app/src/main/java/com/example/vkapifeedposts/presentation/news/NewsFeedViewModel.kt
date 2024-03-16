@@ -1,10 +1,8 @@
 package com.example.vkapifeedposts.presentation.news
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vkapifeedposts.data.repository.NewsFeedRepositoryImpl
 import com.example.vkapifeedposts.domain.entity.FeedPost
 import com.example.vkapifeedposts.domain.usecases.ChangeLikeStatusUseCase
 import com.example.vkapifeedposts.domain.usecases.DeleteItemUseCase
@@ -18,21 +16,21 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class NewsFeedViewModel(application: Application) : AndroidViewModel(application = application) {
+class NewsFeedViewModel@Inject constructor(
+    private val getRecommendationsUseCase : GetRecommendationsUseCase,
+            private val loadNextDataUseCase : LoadNextDataUseCase,
+            private val changeLikeStatusUseCase : ChangeLikeStatusUseCase,
+            private val deleteItemUseCase : DeleteItemUseCase
+) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         Log.d("NewsFeedExceptionHandler", "Exception caught by exception handler")
     }
 
 
-    private val repository = NewsFeedRepositoryImpl(application)
-
-    private val getRecommendationsUseCase = GetRecommendationsUseCase(repository)
-    private val loadNextDataUseCase = LoadNextDataUseCase(repository)
-    private val changeLikeStatusUseCase = ChangeLikeStatusUseCase(repository)
-    private val deleteItemUseCase = DeleteItemUseCase(repository)
 
     private val recomandationFlow = getRecommendationsUseCase.invoke()
 

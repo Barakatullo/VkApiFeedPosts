@@ -6,8 +6,9 @@ import com.example.vkapifeedposts.domain.entity.PostComment
 import com.example.vkapifeedposts.domain.repository.NewsFeedRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class ChangeLikeStatusUseCase(private val repository: NewsFeedRepository) {
+class ChangeLikeStatusUseCase @Inject constructor (private val repository: NewsFeedRepository) {
     suspend operator fun invoke(feedPost: FeedPost) {
          repository.changeLikeStatus(feedPost)
     }
