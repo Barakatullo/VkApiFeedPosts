@@ -8,19 +8,24 @@ import com.example.vkapifeedposts.domain.FeedPost
 import com.example.vkapifeedposts.extensions.mergeWith
 import com.example.vkapifeedposts.domain.StatisticItem
 import com.example.vkapifeedposts.domain.StatisticType
+import com.example.vkapifeedposts.domain.LoginState
 import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import com.vk.api.sdk.auth.VKAccessToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
 class NewsFeedRepository(application: Application) {
     private val storage = VKPreferencesKeyValueStorage(application)
-    private val token = VKAccessToken.restore(storage)
+    private val token
+        get() = VKAccessToken.restore(storage)
     private val apiService = ApiFactory.apiService
     private val mapper = NewsFeedMapper()
     private var nextFrom: String? = null
@@ -47,15 +52,14 @@ class NewsFeedRepository(application: Application) {
             _feedPosts.addAll(posts)
             emit(feedPosts)
         }
-
+    }
+        .retry {
+        delay(Retry_TimeOut_Millis)
+        true
     }
     private val _feedPosts = mutableListOf<FeedPost>()
    private val feedPosts: List<FeedPost>
         get() = _feedPosts.toList()
-
-
-
-
 
     val recommendations: StateFlow<List<FeedPost>> =loadedListFlow.mergeWith(refreshListFlow)
         .stateIn(
@@ -101,9 +105,36 @@ class NewsFeedRepository(application: Application) {
         refreshListFlow.emit(feedPosts)
     }
 
-    suspend fun getComments(feedPost: FeedPost): List<PostComment> {
-        val dto = apiService.getComments(getAccessToken(), feedPost.comunityId, feedPost.id)
-        val postComments = mapper.mapResponseToPostComments(dto)
-        return postComments
+     fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow  {
+            val dto = apiService.getComments(getAccessToken(), feedPost.comunityId, feedPost.id)
+            val postComments = mapper.mapResponseToPostComments(dto)
+            emit(postComments)
+    }.retry {
+        delay(Retry_TimeOut_Millis)
+        true
+    }
+
+    private val checkAuthState = MutableSharedFlow<Unit>(replay = 1)
+
+    val getAuthState = flow {
+        checkAuthState.emit(Unit)
+        checkAuthState.collect{
+            val currentToken = token
+            val loggedIn = currentToken != null && currentToken.isValid
+            if (loggedIn) emit(LoginState.Auth)  else emit(LoginState.NoAuth)
+        }
+    }
+        .stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = LoginState.Initial
+    )
+
+   suspend fun checkAuthState() {
+        checkAuthState.emit(Unit)
+    }
+
+    companion object {
+        private const val Retry_TimeOut_Millis = 3000L
     }
 }
