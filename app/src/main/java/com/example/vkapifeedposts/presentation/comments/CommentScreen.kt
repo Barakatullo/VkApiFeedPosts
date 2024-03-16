@@ -20,10 +20,12 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +54,7 @@ fun CommentScreen(
         )
     )
 
-    val screenState = viewmodel.screenState.observeAsState(CommentsScreenState.Initial)
+    val screenState = viewmodel.screenState.collectAsState(CommentsScreenState.Initial)
 
     val currentState = screenState.value
     if (currentState is CommentsScreenState.Comments) {
@@ -87,7 +89,9 @@ fun CommentScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(items = currentState.comments , key = { it.id }) {
+                items(items = currentState.comments, key = {
+                    it.id
+                }) {
                     Comment(comment = it)
                 }
 
@@ -97,28 +101,43 @@ fun CommentScreen(
 }
 
 @Composable
-fun Comment(comment: PostComment){
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 4.dp)
-
+fun Comment(comment: PostComment)
+{
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 4.dp
+            )
     ) {
-        AsyncImage(model = comment.authorAvatar ,modifier = Modifier.size(48.dp).
-            clip(CircleShape), contentDescription =null )
+        AsyncImage(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+            ,
+            model = comment.authorAvatar,
+            contentDescription = null
+        )
         Spacer(modifier = Modifier.width(8.dp))
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
-                Text(text =comment.authorName, color = Color.Cyan,
-                    fontSize = 12.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-            Text(text = comment.commentText, color = Color.Blue,
+        Column {
+            Text(
+                text = comment.authorName,
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 12.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = comment.commentText,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text =comment.publicationData, color = Color.Yellow,
+            Text(
+                text = comment.publicationData,
+                color = MaterialTheme.colorScheme.onSecondary,
                 fontSize = 12.sp
             )
         }
-
     }
 }

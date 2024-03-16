@@ -4,8 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vkapifeedposts.domain.LoginState
 import com.example.vkapifeedposts.ui.theme.VkApiFeedPostsTheme
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKScope
@@ -16,9 +17,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             VkApiFeedPostsTheme {
                 val viewModel : LoginViewModel = viewModel()
-                val stateOf = viewModel.authState.observeAsState(LoginState.Initial)
+                val stateOf = viewModel.authState.collectAsState(LoginState.Initial)
                 val launch = rememberLauncherForActivityResult(contract = VK.getVKAuthActivityResultContract() ) {
-                    viewModel.performAuthResult(it)
+                    viewModel.performAuthResult()
                 }
                 when(stateOf.value){
                     LoginState.Auth -> {
