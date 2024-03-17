@@ -6,34 +6,31 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vkapifeedposts.di.ApplicationComponent
 import com.example.vkapifeedposts.domain.entity.LoginState
 import com.example.vkapifeedposts.presentation.ViewModelFactory
-import com.example.vkapifeedposts.presentation.news.NewsFeedApplication
+import com.example.vkapifeedposts.presentation.NewsFeedApplication
+import com.example.vkapifeedposts.presentation.getApplicationComponent
 import com.example.vkapifeedposts.ui.theme.VkApiFeedPostsTheme
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKScope
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var viewmodelFactory: ViewModelFactory
-    private val component by lazy {
-        (application as NewsFeedApplication).component
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        component.inject(this)
         super.onCreate(savedInstanceState)
         setContent {
+            val component = getApplicationComponent()
+            val viewModel : MainViewModel = viewModel(factory =  component.getViewModelFactory())
+            val stateOf = viewModel.authState.collectAsState(LoginState.Initial)
+            val launch = rememberLauncherForActivityResult(contract = VK.getVKAuthActivityResultContract() ) {
+                viewModel.performAuthResult()
+            }
             VkApiFeedPostsTheme {
-                val viewModel : MainViewModel = viewModel(factory =  viewmodelFactory)
-                val stateOf = viewModel.authState.collectAsState(LoginState.Initial)
-                val launch = rememberLauncherForActivityResult(contract = VK.getVKAuthActivityResultContract() ) {
-                    viewModel.performAuthResult()
-                }
+
                 when(stateOf.value){
                     LoginState.Auth -> {
-                        MainScreen(viewmodelFactory)
+                        MainScreen()
                     }
                     LoginState.NoAuth -> {
                         LoginScreen {
@@ -47,6 +44,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
     }
 }
