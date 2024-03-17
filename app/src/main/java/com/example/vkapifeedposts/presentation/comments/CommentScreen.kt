@@ -1,7 +1,6 @@
 package com.example.vkapifeedposts.presentation.comments
 
 import android.annotation.SuppressLint
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,41 +24,45 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.vkapifeedposts.domain.entity.PostComment
 import com.example.vkapifeedposts.domain.entity.FeedPost
-import com.example.vkapifeedposts.presentation.ViewModelFactory
-import com.example.vkapifeedposts.presentation.news.NewsFeedApplication
+import com.example.vkapifeedposts.domain.entity.PostComment
+import com.example.vkapifeedposts.presentation.getApplicationComponent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CommentScreen(
     feedPost: FeedPost,
     onBackPressed: () -> Unit
 ) {
-    val component =(LocalContext.current.applicationContext as NewsFeedApplication)
-        .component
+    val component = getApplicationComponent()
         .getCommentsScreenComponentFactory()
         .create(feedPost)
 
-    val context = LocalContext.current
-    val application = context.applicationContext as Application
-    val viewmodel: CommentsViewModel = viewModel(
+    val viewModel: CommentsViewModel = viewModel(
         factory = component.getVMFactory()
     )
 
-    val screenState = viewmodel.screenState.collectAsState(CommentsScreenState.Initial)
+    val screenState = viewModel.screenState.collectAsState(CommentsScreenState.Initial)
 
+    CommentScreenContent(screenState, onBackPressed)
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CommentScreenContent(
+    screenState: State<CommentsScreenState>,
+    onBackPressed: () -> Unit
+) {
     val currentState = screenState.value
     if (currentState is CommentsScreenState.Comments) {
         Scaffold(
@@ -105,8 +108,7 @@ fun CommentScreen(
 }
 
 @Composable
-fun Comment(comment: PostComment)
-{
+fun Comment(comment: PostComment) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,8 +120,7 @@ fun Comment(comment: PostComment)
         AsyncImage(
             modifier = Modifier
                 .size(48.dp)
-                .clip(CircleShape)
-            ,
+                .clip(CircleShape),
             model = comment.authorAvatar,
             contentDescription = null
         )
